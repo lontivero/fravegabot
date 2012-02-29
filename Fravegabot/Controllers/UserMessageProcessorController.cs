@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,26 +11,38 @@ namespace Fravegabot.Controllers
     public class UserMessageProcessorController : Controller
     {
         [AcceptVerbs("GET", "POST")]
-        public ActionResult SendMessage(UserMessageModel model)
+        public ActionResult SendMessage(UserMessageModel model, [ModelBinder(typeof(MessageListBinder))] MessageList previousMessages)
         {
-            return SendToUser(Request.Dump());
+            return SendToUser(ModelState.IsValid 
+                ? model.Msg
+                : Request.Dump());
         }
 
         private static ActionResult SendToUser(string message)
         {
             return new ContentResult{ Content = message };
         }
+
+        protected override void OnException(ExceptionContext filterContext)
+        {
+            filterContext.Result = SendToUser(filterContext.Exception.ToString());
+            filterContext.ExceptionHandled = true;
+        }
     }
 
     public class UserMessageModel
     {
         public Guid BotKey { get; set; }
-        public Guid UserKey { get; set; }
+        public string UserKey { get; set; }
         public string Network { get; set; }
         public string User { get; set; }
         public string Channel { get; set; }
-        public string Message { get; set; }
+        public string Msg { get; set; }
         public long Step { get; set; }
+    }
+
+    public class MessageList : List<string>
+    {
     }
 
     public static class RequestExtensions
