@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Fravegabot.Binders;
 using Fravegabot.Infrastructure;
+using Fravegabot.Models;
 using Microsoft.Practices.Unity;
-using Fravegabot.Controllers;
 
 namespace Fravegabot
 {
@@ -46,36 +44,4 @@ namespace Fravegabot
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }
     }
-
-    public class MessageListBinder  : IModelBinder
-    {
-        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
-        {
-            var values = new MessageList();
-            int i = 0;
-            var valueProviderResult = bindingContext.ValueProvider.GetValue("value" + i);
-            while (valueProviderResult!=null)
-            {
-                i++;
-                values.Add(valueProviderResult.AttemptedValue);
-                valueProviderResult = bindingContext.ValueProvider.GetValue("value" + i);
-            }
-            return values;
-        }
-    }
-
-    public class GuidBinder : IModelBinder
-    {
-        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
-        {
-            var key = bindingContext.ModelName;
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(key);
-            if(valueProviderResult != null)
-            {
-                return Guid.Parse( valueProviderResult.AttemptedValue.Replace("-",""));
-            }
-            return Guid.Empty;
-        }
-    }
-
 }

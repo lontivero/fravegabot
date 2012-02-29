@@ -67,11 +67,16 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Binders\GuidBinder.cs" />
+    <Compile Include="Binders\MessageListBinder.cs" />
     <Compile Include="Controllers\UserMessageProcessorController.cs" />
+    <Compile Include="Extensions\RequestExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\UnityDependencyResolver.cs" />
+    <Compile Include="Models\MessageList.cs" />
+    <Compile Include="Models\UserMessageModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
