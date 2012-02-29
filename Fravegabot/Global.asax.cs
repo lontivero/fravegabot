@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Fravegabot.Infrastructure;
 using Microsoft.Practices.Unity;
+using Fravegabot.Controllers;
 
 namespace Fravegabot
 {
@@ -31,6 +32,8 @@ namespace Fravegabot
             ConfigDependencyContainer();
 
             AreaRegistration.RegisterAllAreas();
+            ModelBinders.Binders.Add(typeof(MessageList), new MessageListBinder());
+            ModelBinders.Binders.Add(typeof(Guid), new GuidBinder());
 
             RegisterRoutes(RouteTable.Routes);
 
@@ -43,4 +46,36 @@ namespace Fravegabot
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }
     }
+
+    public class MessageListBinder  : IModelBinder
+    {
+        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+        {
+            var values = new MessageList();
+            int i = 0;
+            var valueProviderResult = bindingContext.ValueProvider.GetValue("value" + i);
+            while (valueProviderResult!=null)
+            {
+                i++;
+                values.Add(valueProviderResult.AttemptedValue);
+                valueProviderResult = bindingContext.ValueProvider.GetValue("value" + i);
+            }
+            return values;
+        }
+    }
+
+    public class GuidBinder : IModelBinder
+    {
+        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+        {
+            var key = bindingContext.ModelName;
+            var valueProviderResult = bindingContext.ValueProvider.GetValue(key);
+            if(valueProviderResult != null)
+            {
+                return Guid.Parse( valueProviderResult.AttemptedValue.Replace("-",""));
+            }
+            return Guid.Empty;
+        }
+    }
+
 }
